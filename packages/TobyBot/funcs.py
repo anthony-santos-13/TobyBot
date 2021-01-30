@@ -11,13 +11,15 @@ def rumble_sequence(n):
 
     return output_seq
 
-def assign_rumble(names, n):
-    """Accepts a list of names and assigns an even amount of random numbers from 1 to n to each name.\n
-    Return a list of dicts, each containing a name and list of numbers."""
+def assign_rumble(members, n):
+    """Accepts a list of members and assigns an even amount of random numbers from 1 to n to each member.\n
+    Returns a list of formatted messages strings."""
 
     dict_list = []
-    for name in names:
-        dict_list.append({"name": name, "numbers": []})
+    # shuffle names
+    members = random.sample(members, len(members))
+    for member in members:
+        dict_list.append({"member": member, "numbers": []})
 
     # get a random sequence
     rumble_seq = rumble_sequence(n)
@@ -34,4 +36,24 @@ def assign_rumble(names, n):
     # sort the numbers for each name
     [d["numbers"].sort() for d in dict_list]
 
-    return dict_list
+    messages = get_rumble_messages(dict_list)
+
+    return messages
+
+def get_rumble_messages(dict_list):
+    """Accepts a list of dicts, each containing a member and numbers list.\n
+    Returns a list of strings representing formatted messages."""
+    messages = []
+    for d in dict_list:
+        messages.append(f"<@{d['member'].id}> your numbers are: {', '.join(str(n) for n in d['numbers'])}")
+
+    return messages
+
+def get_toby_clip():
+    toby_clips = ["https://www.trueachievements.com/gameclip.aspx?clipid=24880582",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=24566232",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=39305715",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=31552145",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=88214325"]
+
+    return random.choice(toby_clips)

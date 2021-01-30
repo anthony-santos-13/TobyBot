@@ -4,6 +4,7 @@ from funcs import *
 
 HELLO = ("!hello")
 RUMBLE = ("!rumble")
+TOBYCLIP = ("!tobyclip")
 
 intents = discord.Intents.default()
 intents.members = True
@@ -19,24 +20,29 @@ async def on_message(message):
         return
 
     # process HELLO command
-    if message.content.lower().startswith(HELLO.lower()):
+    if message.content.lower().startswith(HELLO):
         await message.channel.send(f"Hello {message.author.name}!")
 
     # process RUMBLE command
-    if message.content.lower().startswith(RUMBLE.lower()):
+    elif message.content.lower().startswith(RUMBLE):
         voice = message.author.voice
         if(voice is None):
             await message.channel.send("You must be in a voice channel to use that command <:kurt_thumbs_down:695734225458167900>")
             return
 
         channel = voice.channel
-        member_names = list(m.name for m in channel.members)
+        await message.channel.send(f"Hello {channel}, it's time for a ROYAL RUMBLE match!")
+
+        members = channel.members
         num_entrants = 30
         
-        rumble = assign_rumble(member_names, num_entrants)
-        send_message = f"You are in {channel}. Hello {', '.join(member_names)}. \n"
-        for r in rumble:
-            send_message += f"{r['name']} your numbers are: {', '.join(str(n) for n in r['numbers'])}\n"
-        await message.channel.send(send_message)
+        messages = assign_rumble(members, num_entrants)
+        [await message.channel.send(m) for m in messages]
+        
+    # process TOBYCLIP command
+    elif message.content.lower().startswith(TOBYCLIP):
+        clip = get_toby_clip()
+
+        await message.channel.send(f"Here's a cool TobyStamkos clip: {clip}")
 
 client.run(os.getenv('TOKEN'))
