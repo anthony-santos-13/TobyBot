@@ -10,6 +10,9 @@ intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
 
+# get authorized channels from env config, for use with specific restricted commands
+bot_channels = [int(c) for c in os.getenv('BOT_CHANNELS').split()]
+
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
@@ -25,6 +28,10 @@ async def on_message(message):
 
     # process RUMBLE command
     elif message.content.lower().startswith(RUMBLE):
+        if message.channel.id not in bot_channels:
+            await message.channel.send("That command can only be used from authorized channels <:cena_blep:695734225885855866>")
+            return
+
         voice = message.author.voice
         if(voice is None):
             await message.channel.send("You must be in a voice channel to use that command <:kurt_thumbs_down:695734225458167900>")
