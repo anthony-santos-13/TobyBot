@@ -86,6 +86,21 @@ async def on_message(message, bookie = bookie, admin = admin, currency = currenc
         send_message = f'{author_name}, your current funds are {current_funds} {currency}.'
         await message.channel.send(send_message)
 
+    # process MY_FUNDS command
+    if message.content.lower().startswith(MY_FUNDS.lower()):
+        voice = message.author.voice
+        if(voice is None):
+            await message.channel.send("You must be in a voice channel to use that command <:kurt_thumbs_down:695734225458167900>")
+            return
+
+        channel = voice.channel
+        author_name = message.author.name
+
+        current_funds = bookie.get_member_funds(author_name)
+
+        send_message = f'{author_name}, your current funds are {current_funds} {currency}.'
+        await message.channel.send(send_message)
+
     # process START_BANK command
     if message.content.lower().startswith(START_BANK.lower()):
         voice = message.author.voice
@@ -179,5 +194,8 @@ async def on_message(message, bookie = bookie, admin = admin, currency = currenc
         bookie.reward_winners([winner], reward)
 
         await message.channel.send(f'{winner} is the winner and gets {reward} {currency} for a total of {bookie.bank_dict.get(winner)} {currency}!')
+
+
+
 
 client.run(token)
