@@ -1,3 +1,5 @@
 .venv
 .vscode
 __pycache__/
+testing.py
+idea_list.txt
