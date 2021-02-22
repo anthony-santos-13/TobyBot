@@ -80,6 +80,115 @@ def get_toby_clip():
     "https://www.trueachievements.com/gameclip.aspx?clipid=24566232",
     "https://www.trueachievements.com/gameclip.aspx?clipid=39305715",
     "https://www.trueachievements.com/gameclip.aspx?clipid=31552145",
-    "https://www.trueachievements.com/gameclip.aspx?clipid=88214325"]
+    "https://www.trueachievements.com/gameclip.aspx?clipid=88214325",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=169420501",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=166655251",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=162029530",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=162029531",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=161712706",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=160605008",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=160605009",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=157112731",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=156264376",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=148824379",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=148741495",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=149457306",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=149457305",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=90283871",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=129194622",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=128998196",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=128962869",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=128962868",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=82054514",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=68835768",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=47592202",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=24226704",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=17018605",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=15519789",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=2444675",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=2444694",
+    "https://www.trueachievements.com/gameclip.aspx?clipid=2444687"
+    ]
 
     return random.choice(toby_clips)
+
+def create_poll(message):
+    poll_message = ""
+
+    try:
+        title = find_title(message)
+        options = find_options(message, [])
+        if len(options) == 0:
+            raise Exception
+        poll_message, poll_labels = build_poll_message(title, options)
+
+    except:
+        return "<:cena_blep:695734225885855866> Error creating poll. Please check poll syntax: '!poll {title} [option1] [option2] ... [optionN]'", []
+
+    return poll_message, poll_labels
+
+# parses the title, which should be in between curly brackets ('{title}')
+def find_title(message):
+    # this is the index of the first character of the title
+    first = message.find('{') + 1
+    # index of the last character of the title
+    last = message.find('}')
+    if first == 0 or last == -1:
+        raise KeyError
+    return message[first:last]
+
+# parses the options (recursively), which should be in between square brackets ('[option]')
+def find_options(message, options):
+    # first index of the first character of the option
+    first = message.find('[') + 1
+    # index of the last character of the title
+    last = message.find(']')
+    if (first == 0 or last == -1):
+        if len(options) < 2:
+            raise KeyError
+        else:
+            return options
+    options.append(message[first:last])
+    message = message[last+1:]
+    return find_options(message, options)
+
+def build_poll_message(title, options):
+    message = f"__**{title}**__\n"
+    
+    poll_labels = []
+    i = 0
+    for o in options:
+        poll_label = get_poll_label(i, o)
+        message += f"{poll_label} {o}\n"
+
+        poll_labels.append(poll_label)
+        i += 1
+    
+    return message, poll_labels
+
+def get_poll_label(index, override):
+    default_poll_labels = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','🇯']
+
+    if("orton" in override.lower()):
+        return "<:orton_afraid:695734225634328590>"
+    if("miz" in override.lower()):
+        return "<:miz_nervous:760963180679004200>"
+
+
+    return default_poll_labels[index]
+
+def get_help_text():
+    return """```
+Supported commands:
+!hello - Say hello to TobyBot!
+!tobyclip - Request a cool TobyStamkos gamerclip 😎.
+!rumble - Restricted command that only works during a Royal Rumble event. Randomly generates a 30-entrant Royal Rumble pool using the current members of the sender's voice channel.
+!poll - Restricted command. Generates a poll of up to 10 options. Requires the following syntax of command and brackets: !poll {Title} [Option1] [Option2] ... [OptionN]
+!what - WHAT?
+
+Restricted commands can only be used in the bot channel. The rest can be used anywhere.
+```"""
+
+def get_what():
+    whats = ["<:austin_happy:696083318818603079>", "<:austin_finger:696083319254941718>"]
+    return random.choice(whats)
